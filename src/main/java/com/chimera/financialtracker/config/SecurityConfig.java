@@ -23,7 +23,6 @@ public class SecurityConfig {
 
         return http
                 .csrf(customizer -> customizer.disable())
-                .authorizeHttpRequests(request -> request.anyRequest().authenticated())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/getUser", "/createuser").permitAll()
                         .anyRequest().authenticated()
