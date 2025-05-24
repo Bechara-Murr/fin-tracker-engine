@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthenticationController {
 
-    @Autowired
-    FTUserDetailsService ftUserDetailsService;
+    private final FTUserDetailsService ftUserDetailsService;
+
+    public AuthenticationController(FTUserDetailsService ftUserDetailsService){
+        this.ftUserDetailsService = ftUserDetailsService;
+    }
 
     @GetMapping("/getUser")
     String getUser() {
@@ -21,6 +24,6 @@ public class AuthenticationController {
 
     @PostMapping("/createuser")
     Users createUser(@RequestBody Users newUser) {
-        return ftUserDetailsService.createUser(newUser.getUsername(), newUser.getPassword());
+        return ftUserDetailsService.createUser(newUser.getUsername(), newUser.getPassword(), newUser.getRoles());
     }
 }
