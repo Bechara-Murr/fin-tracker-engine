@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class AuthenticationController {
 
@@ -18,12 +20,12 @@ public class AuthenticationController {
     }
 
     @GetMapping("/getUser")
-    String getUser() {
-        return "Got user";
+    List<Users> getUser() {
+        return ftUserDetailsService.getAllUsers();
     }
 
     @PostMapping("/createuser")
-    Users createUser(@RequestBody Users newUser) {
-        return ftUserDetailsService.createUser(newUser.getUsername(), newUser.getPassword(), newUser.getRoles());
+    Users createUser(@RequestBody Users newUser) throws Exception {
+        return ftUserDetailsService.createUser(newUser.getUsername(), newUser.getEmail(), newUser.getPassword(), newUser.getConfirmPassword(), newUser.getRoles());
     }
 }

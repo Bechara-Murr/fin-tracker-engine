@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -18,7 +20,9 @@ public class Role {
     @Column(name="id", updatable = false, nullable = false, columnDefinition = "UUID DEFAULT gen_random_uuid()")
     private UUID id;
 
-    @NotNull
+    @NotNull(message = "Role name cannot be null")
+    @NotBlank(message = "Role name cannot be blank")
+    @Column(unique=true)
     private String name;
 
     public UUID getId() {

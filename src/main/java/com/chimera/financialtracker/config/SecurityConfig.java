@@ -15,7 +15,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
     private final UserDetailsService userDetailsService;
 
     public SecurityConfig(UserDetailsService userDetailsService){
