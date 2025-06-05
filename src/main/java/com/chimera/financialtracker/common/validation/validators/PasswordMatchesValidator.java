@@ -1,6 +1,7 @@
 package com.chimera.financialtracker.common.validation.validators;
 
 import com.chimera.financialtracker.common.validation.annotations.PasswordMatches;
+import com.chimera.financialtracker.security.auth.dto.UserDTO;
 import com.chimera.financialtracker.security.auth.model.Users;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -13,7 +14,7 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
 
     @Override
     public boolean isValid(Object obj, ConstraintValidatorContext context){
-        Users user = (Users) obj;
+        UserDTO user = (UserDTO) obj;
         return user.getPassword().equals(user.getConfirmPassword());
     }
 }

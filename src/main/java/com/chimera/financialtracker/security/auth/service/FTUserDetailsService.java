@@ -50,8 +50,8 @@ public class FTUserDetailsService implements UserDetailsService {
             Users user = new Users();
             user.setUsername(username);
             user.setEmail(email);
-            user.setPassword(password);
-            user.setConfirmPassword(confirmPassword);
+            user.setPassword(passwordEncoder.encode(password));
+            user.setConfirmPassword(passwordEncoder.encode(confirmPassword));
             user.setRoles(roles);
 
 
