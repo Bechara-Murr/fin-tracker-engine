@@ -29,8 +29,8 @@ public class Users {
     @Column(unique = true)
     private String email;
 
-    @Column(columnDefinition = "boolean default false")
-    private Boolean isVerified;
+    @Column(columnDefinition = "boolean default false", nullable = false)
+    private Boolean isVerified = false;
 
     private String password;
     private String confirmPassword;

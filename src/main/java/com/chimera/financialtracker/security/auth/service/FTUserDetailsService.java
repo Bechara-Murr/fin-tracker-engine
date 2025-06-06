@@ -1,5 +1,6 @@
 package com.chimera.financialtracker.security.auth.service;
 
+import com.chimera.financialtracker.security.auth.dto.LoginDTO;
 import com.chimera.financialtracker.security.auth.model.Role;
 import com.chimera.financialtracker.security.auth.model.UserPrincipal;
 import com.chimera.financialtracker.security.auth.model.Users;
@@ -7,11 +8,12 @@ import com.chimera.financialtracker.security.auth.repository.UserRepo;
 import jakarta.persistence.RollbackException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class FTUserDetailsService implements UserDetailsService {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
     private final UserRepo userRepository;
+
 
     public FTUserDetailsService(UserRepo userRepository){
         this.userRepository = userRepository;
@@ -40,7 +43,9 @@ public class FTUserDetailsService implements UserDetailsService {
     }
 
     public List<Users> getAllUsers(){
-        return userRepository.findAll();
+        List<Users> allusers = userRepository.findAll();
+
+        return allusers;
     }
 
     public Users createUser(String username, String email, String password, String confirmPassword, Set<Role> roles) throws Exception{
