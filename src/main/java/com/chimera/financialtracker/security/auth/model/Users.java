@@ -29,8 +29,8 @@ public class Users {
     @Column(unique = true)
     private String email;
 
-    @Column(columnDefinition = "boolean default false", nullable = false)
-    private Boolean isVerified = false;
+    @Column(name = "enabled", nullable = false)
+    private Boolean enabled = false;
 
     private String password;
     private String confirmPassword;
@@ -42,6 +42,14 @@ public class Users {
             inverseJoinColumns = @JoinColumn(name="role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    public Users() {
+        super();
+        this.enabled = false;
+    }
+
+
+    /** Getters and setters */
 
     public String getUsername() {
         return username;
@@ -67,12 +75,12 @@ public class Users {
         this.password = password;
     }
 
-    public Boolean getVerified() {
-        return isVerified;
+    public Boolean getEnabled() {
+        return enabled;
     }
 
-    public void setVerified(Boolean verified) {
-        isVerified = verified;
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getConfirmPassword() {
@@ -96,7 +104,7 @@ public class Users {
         return "Users{" +
                 "username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", isVerified=" + isVerified +
+                ", enabled=" + enabled +
                 ", password='" + password + '\'' +
                 ", confirmPassword='" + confirmPassword + '\'' +
                 ", roles=" + roles +

@@ -2,20 +2,20 @@ package com.chimera.financialtracker.security.auth.controller;
 
 import com.chimera.financialtracker.security.auth.dto.LoginDTO;
 import com.chimera.financialtracker.security.auth.dto.UserDTO;
+import com.chimera.financialtracker.security.auth.event.OnRegistrationCompleteEvent;
 import com.chimera.financialtracker.security.auth.model.Users;
 import com.chimera.financialtracker.security.auth.service.AuthService;
 import com.chimera.financialtracker.security.auth.service.FTUserDetailsService;
 import jakarta.persistence.RollbackException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
-import jakarta.validation.Validator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
 
@@ -25,12 +25,15 @@ public class AuthenticationController {
     private final FTUserDetailsService ftUserDetailsService;
     private final AuthService authService;
 
-    @Autowired
-    private Validator validator;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public AuthenticationController(FTUserDetailsService ftUserDetailsService, AuthService authService){
+
+    public AuthenticationController(FTUserDetailsService ftUserDetailsService,
+                                    AuthService authService,
+                                    ApplicationEventPublisher eventPublisher){
         this.ftUserDetailsService = ftUserDetailsService;
         this.authService = authService;
+        this.eventPublisher = eventPublisher;
     }
 
     @GetMapping("/getUser")
@@ -48,28 +51,28 @@ public class AuthenticationController {
     }
 
     @PostMapping("/createuser")
-    public Users createUser(@RequestBody @Valid UserDTO newUser) throws Exception {
+    public ResponseEntity createUser(@RequestBody @Valid UserDTO newUser, HttpServletRequest request) {
         try{
-            return ftUserDetailsService.createUser(newUser.getUsername(), newUser.getEmail(), newUser.getPassword(), newUser.getConfirmPassword(), newUser.getRoles());
+            Users registered = ftUserDetailsService.createUser(newUser.getUsername(), newUser.getEmail(), newUser.getPassword(), newUser.getConfirmPassword(), newUser.getRoles());
+            String appUrl = request.getContextPath();
+            eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered,
+                    request.getLocale(), appUrl));
+
+            return new ResponseEntity(
+                    "You have successfully created a new account, please proceed to verify it",
+                    HttpStatus.CREATED
+            );
         }catch(Exception e) {
-            Throwable cause = e.getCause();
-            while (cause != null) {
-                if (cause instanceof RollbackException rollbackEx) {
-                    Throwable rollbackCause = rollbackEx.getCause();
-                    if (rollbackCause instanceof ConstraintViolationException validationEx) {
-                        for (ConstraintViolation<?> violation : validationEx.getConstraintViolations()) {
-                            System.out.println("Validation error: " + violation.getMessage());
-                            // Optionally throw a custom exception here
-                        }
-                        // Stop further unwrapping
-                        break;
-                    }
-                }
-                cause = cause.getCause(); // keep unwrapping if needed
-            }
-            System.out.println(e.getMessage());
-            System.out.println(e.getCause());
-            throw  e;
+            return new ResponseEntity("The account could not be created.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/registrationConfirm")
+    public String confirmRegistration(WebRequest request, @RequestParam("token") String token){
+        try {
+            return authService.verifyRegistration(token);
+        } catch (Exception e){
+            throw e;
         }
     }
 }

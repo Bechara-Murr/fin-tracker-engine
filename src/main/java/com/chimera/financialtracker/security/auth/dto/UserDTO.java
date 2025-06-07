@@ -2,7 +2,6 @@ package com.chimera.financialtracker.security.auth.dto;
 
 import com.chimera.financialtracker.common.validation.annotations.PasswordMatches;
 import com.chimera.financialtracker.security.auth.model.Role;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
