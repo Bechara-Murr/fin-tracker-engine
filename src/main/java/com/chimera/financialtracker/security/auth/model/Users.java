@@ -1,6 +1,5 @@
 package com.chimera.financialtracker.security.auth.model;
 
-import com.chimera.financialtracker.common.validation.annotations.PasswordMatches;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -21,7 +20,9 @@ public class Users {
     @Column(name="id", updatable = false, nullable = false, columnDefinition = "UUID DEFAULT gen_random_uuid()")
     private UUID id;
 
-    private String username;
+    private String firstName;
+
+    private String lastName;
 
     @NotNull(message="Email cannot be null")
     @NotBlank(message="Email cannot be blank")
@@ -31,6 +32,8 @@ public class Users {
 
     @Column(name = "enabled", nullable = false)
     private Boolean enabled = false;
+
+    private String phoneNumber;
 
     private String password;
     private String confirmPassword;
@@ -48,16 +51,33 @@ public class Users {
         this.enabled = false;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
     /** Getters and setters */
 
-    public String getUsername() {
-        return username;
-    }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public String getEmail() {
         return email;
@@ -102,9 +122,11 @@ public class Users {
     @Override
     public String toString() {
         return "Users{" +
-                "username='" + username + '\'' +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", enabled=" + enabled +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 ", password='" + password + '\'' +
                 ", confirmPassword='" + confirmPassword + '\'' +
                 ", roles=" + roles +

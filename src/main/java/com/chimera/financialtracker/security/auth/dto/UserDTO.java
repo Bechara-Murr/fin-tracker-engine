@@ -13,12 +13,16 @@ import java.util.Set;
 @PasswordMatches
 public class UserDTO {
 
-    private String username;
+    private String firstName;
+
+    private String lastName;
 
     @NotNull(message="Email cannot be null")
     @NotBlank(message="Email cannot be blank")
     @Email(message="Please enter a valid email address")
     private String email;
+
+    private String phoneNumber;
 
     @NotNull
     @NotEmpty
@@ -27,12 +31,28 @@ public class UserDTO {
 
     private Set<Role> roles = new HashSet<>();
 
-    public String getUsername() {
-        return username;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getEmail() {

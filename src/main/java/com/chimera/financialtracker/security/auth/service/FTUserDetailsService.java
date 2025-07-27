@@ -1,6 +1,5 @@
 package com.chimera.financialtracker.security.auth.service;
 
-import com.chimera.financialtracker.security.auth.dto.LoginDTO;
 import com.chimera.financialtracker.security.auth.model.Role;
 import com.chimera.financialtracker.security.auth.model.UserPrincipal;
 import com.chimera.financialtracker.security.auth.model.Users;
@@ -8,8 +7,6 @@ import com.chimera.financialtracker.security.auth.repository.UserRepo;
 import jakarta.persistence.RollbackException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +20,7 @@ import java.util.Set;
 @Service
 public class FTUserDetailsService implements UserDetailsService {
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
     private final UserRepo userRepository;
 
 
@@ -31,13 +28,10 @@ public class FTUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        Users user = userRepository.findByUsername(username);
-        if(user == null){
-            System.out.println("Not found");
-            throw new UsernameNotFoundException("User not found");
-        }
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("No user found with email: " + email));
 
         return new UserPrincipal(user);
     }
@@ -48,13 +42,15 @@ public class FTUserDetailsService implements UserDetailsService {
         return allusers;
     }
 
-    public Users createUser(String username, String email, String password, String confirmPassword, Set<Role> roles) throws Exception{
+    public Users createUser(String firstName, String lastName, String email, String phoneNumber, String password, String confirmPassword, Set<Role> roles) throws Exception{
 
         try {
 
             Users user = new Users();
-            user.setUsername(username);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
             user.setEmail(email);
+            user.setPhoneNumber(phoneNumber);
             user.setPassword(passwordEncoder.encode(password));
             user.setConfirmPassword(passwordEncoder.encode(confirmPassword));
             user.setRoles(roles);
@@ -78,8 +74,6 @@ public class FTUserDetailsService implements UserDetailsService {
                 }
                 cause = cause.getCause(); // keep unwrapping if needed
             }
-            System.out.println(e.getMessage());
-            System.out.println(e.getCause());
             throw  e;
         }
     }

@@ -1,7 +1,6 @@
 package com.chimera.financialtracker.config;
 
 import com.chimera.financialtracker.filter.JwtFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,6 +32,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
         return http
+                .cors(Customizer.withDefaults())
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/getUser", "/createuser", "login", "/roles", "/registrationConfirm").permitAll()

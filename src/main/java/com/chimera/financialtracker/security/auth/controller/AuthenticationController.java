@@ -6,10 +6,7 @@ import com.chimera.financialtracker.security.auth.event.OnRegistrationCompleteEv
 import com.chimera.financialtracker.security.auth.model.Users;
 import com.chimera.financialtracker.security.auth.service.AuthService;
 import com.chimera.financialtracker.security.auth.service.FTUserDetailsService;
-import jakarta.persistence.RollbackException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class AuthenticationController {
@@ -53,17 +51,24 @@ public class AuthenticationController {
     @PostMapping("/createuser")
     public ResponseEntity createUser(@RequestBody @Valid UserDTO newUser, HttpServletRequest request) {
         try{
-            Users registered = ftUserDetailsService.createUser(newUser.getUsername(), newUser.getEmail(), newUser.getPassword(), newUser.getConfirmPassword(), newUser.getRoles());
+            Users registered = ftUserDetailsService.createUser(newUser.getFirstName(),
+                    newUser.getLastName(),
+                    newUser.getEmail(),
+                    newUser.getPhoneNumber(),
+                    newUser.getPassword(),
+                    newUser.getConfirmPassword(),
+                    newUser.getRoles());
             String appUrl = request.getContextPath();
             eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered,
                     request.getLocale(), appUrl));
 
-            return new ResponseEntity(
-                    "You have successfully created a new account, please proceed to verify it",
-                    HttpStatus.CREATED
-            );
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(Map.of("message", "You have successfully created a new account, please proceed to verify it."));
         }catch(Exception e) {
-            return new ResponseEntity("The account could not be created.", HttpStatus.BAD_REQUEST);
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "The account could not be created."));
         }
     }
 
